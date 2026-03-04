@@ -1,0 +1,219 @@
+
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TurtleArt — Generative Art Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ══ SIDEBAR ══════════════════════════════════════════ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">🐢</div>
+      <div>
+        <div class="logo-name">TurtleArt</div>
+        <div class="logo-version">v1.0.0</div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Art Modes</div>
+      <div class="nav-item active" data-mode="spiral">
+        <span class="nav-icon">🌀</span> Spirals
+      </div>
+      <div class="nav-item" data-mode="fractal">
+        <span class="nav-icon">❄️</span> Fractals
+      </div>
+      <div class="nav-item" data-mode="geometric">
+        <span class="nav-icon">⭐</span> Geometric
+      </div>
+      <div class="nav-item" data-mode="lsystem">
+        <span class="nav-icon">🌿</span> L-Systems
+      </div>
+      <div class="nav-item" data-mode="walk">
+        <span class="nav-icon">🚶</span> Random Walk
+      </div>
+      <div class="nav-item" data-mode="tracer">
+        <span class="nav-icon">🖼️</span> Image Tracer
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Session</div>
+      <div class="nav-item" id="btn-download">
+        <span class="nav-icon">⬇</span> Save PNG
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <button class="theme-btn" id="theme-toggle" aria-label="Toggle theme">
+        <span class="theme-icon-light">☀ Light</span>
+        <span class="theme-icon-dark">☾ Dark</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN ═════════════════════════════════════════════ -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <div>
+        <div class="topbar-title" id="topbar-title">Spiral Generator</div>
+        <div class="topbar-sub" id="topbar-sub">parametric · color-cycling · infinite variation</div>
+      </div>
+      <div class="topbar-actions">
+        <div class="chip" id="chip-strokes">0 strokes</div>
+        <div class="chip" id="chip-status">idle</div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+
+      <!-- Stats row -->
+      <div class="stats-row">
+        <div class="stat-card" style="--card-accent:var(--orange)">
+          <div class="stat-label">Strokes</div>
+          <div class="stat-value" id="stat-strokes">0</div>
+          <div class="stat-sub">drawn</div>
+        </div>
+        <div class="stat-card" style="--card-accent:var(--blue)">
+          <div class="stat-label">Steps</div>
+          <div class="stat-value" id="stat-steps">0</div>
+          <div class="stat-sub">total</div>
+        </div>
+        <div class="stat-card" style="--card-accent:var(--green)">
+          <div class="stat-label">Colors</div>
+          <div class="stat-value" id="stat-colors">—</div>
+          <div class="stat-sub">palette</div>
+        </div>
+        <div class="stat-card" style="--card-accent:var(--beige-dark)">
+          <div class="stat-label">Time</div>
+          <div class="stat-value" id="stat-time">0ms</div>
+          <div class="stat-sub">elapsed</div>
+        </div>
+      </div>
+
+      <!-- Workspace -->
+      <div class="workspace">
+
+        <!-- Canvas card -->
+        <div class="card canvas-card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-icon">🎨</div>
+              <span id="canvas-title">Spiral</span>
+            </div>
+            <div class="controls-inline">
+              <button class="ctrl-btn" id="btn-randomize">🎲 Randomize</button>
+              <button class="ctrl-btn" id="btn-clear">✕ Clear</button>
+              <button class="ctrl-btn primary" id="btn-draw">▶ Draw</button>
+            </div>
+          </div>
+          <div class="card-body canvas-body">
+            <canvas id="art-canvas"></canvas>
+            <!-- Drawing overlay shimmer -->
+            <div class="canvas-shimmer" id="canvas-shimmer"></div>
+          </div>
+        </div>
+
+        <!-- Controls card -->
+        <div class="card controls-card">
+          <div class="card-header">
+            <div class="card-title"><div class="card-icon">⚙</div>Controls</div>
+          </div>
+          <div class="card-body controls-body">
+
+            <!-- Speed -->
+            <div class="ctrl-group">
+              <label class="ctrl-label">Speed <span class="ctrl-val" id="lbl-speed">5</span></label>
+              <input type="range" class="ctrl-slider" id="slider-speed" min="1" max="10" value="5" />
+            </div>
+
+            <!-- Color palette -->
+            <div class="ctrl-group">
+              <label class="ctrl-label">Palette</label>
+              <div class="palette-grid" id="palette-grid">
+                <div class="palette-swatch active" data-palette="rainbow" title="Rainbow">
+                  <div class="swatch-preview rainbow-preview"></div>
+                  <span>Rainbow</span>
+                </div>
+                <div class="palette-swatch" data-palette="sunset" title="Sunset">
+                  <div class="swatch-preview sunset-preview"></div>
+                  <span>Sunset</span>
+                </div>
+                <div class="palette-swatch" data-palette="ocean" title="Ocean">
+                  <div class="swatch-preview ocean-preview"></div>
+                  <span>Ocean</span>
+                </div>
+                <div class="palette-swatch" data-palette="forest" title="Forest">
+                  <div class="swatch-preview forest-preview"></div>
+                  <span>Forest</span>
+                </div>
+                <div class="palette-swatch" data-palette="mono" title="Mono">
+                  <div class="swatch-preview mono-preview"></div>
+                  <span>Mono</span>
+                </div>
+                <div class="palette-swatch" data-palette="neon" title="Neon">
+                  <div class="swatch-preview neon-preview"></div>
+                  <span>Neon</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mode-specific controls (injected by JS) -->
+            <div id="mode-controls"></div>
+
+            <!-- Background toggle -->
+            <div class="ctrl-group">
+              <label class="ctrl-label" style="justify-content:space-between">
+                Dark Canvas
+                <label class="toggle-switch">
+                  <input type="checkbox" id="toggle-bg" />
+                  <span class="toggle-track"></span>
+                </label>
+              </label>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /content -->
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <span>© 2026 Ayolela Vena.</span>
+      <span class="footer-sep">·</span>
+      <span>MIT License</span>
+      <span class="footer-sep">·</span>
+      <span>TurtleArt — Generative Art Engine</span>
+    </footer>
+
+  </div><!-- /main -->
+
+  <script type="module" src="app.js"></script>
+
+  <script>
+    (function () {
+      var html  = document.documentElement;
+      var saved = localStorage.getItem('turtleart-theme');
+      if (saved) html.setAttribute('data-theme', saved);
+      var btn = document.getElementById('theme-toggle');
+      if (btn) btn.addEventListener('click', function () {
+        var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('turtleart-theme', next);
+      });
+    })();
+  </script>
+
+</body>
+</html>
